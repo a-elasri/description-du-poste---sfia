@@ -83,25 +83,6 @@ function addSelectionBox(index) {
     return col;
 }
 
-// $(document).ready(function(){
-
-//     var specialElementHandlers={
-//         "#editor":function(element,renderer){
-//             return true;
-//         }
-//     };
-
-//     $("#cmd").click(function(){
-
-//         var doc= new jsPDF();
-
-//         doc.fromHTML($("#sfia-output").html(),15,15,{
-//             "width":170,
-//             "elementHandlers":specialElementHandlers
-//         });
-//         doc.save("pdf.pdf");
-//     });
-// });
 $(document).ready(function () {
 
     var specialElementHandlers = {
@@ -114,7 +95,8 @@ $(document).ready(function () {
 
         var doc = new jsPDF();
         var logoImg = new Image();
-        var nomDuPoste = $("#poste").val(); // Récupérer la valeur saisie dans le champ de saisie
+        var nomDuPoste = $("#poste").val(); 
+        var descriptionsSupplementaires = $("#description_supplementaire").val(); 
 
         doc.setFont("Josefin Sans", "bold");
         doc.setFontSize(24);
@@ -126,8 +108,13 @@ $(document).ready(function () {
         logoImg.onload = function () {
             doc.addImage(logoImg, "PNG", 15, 5, 30, 30);
 
+            // doc.text("Descriptions supplémentaires :", 15, 60);
+            doc.fromHTML(descriptionsSupplementaires, 15, 50, {
+                "width": 170,
+                "elementHandlers": specialElementHandlers
+            });
 
-            doc.fromHTML($("#sfia-output").html(), 15, 40, {
+            doc.fromHTML($("#sfia-output").html(), 15, 70, {
                 "width": 170,
                 "elementHandlers": specialElementHandlers
             });
@@ -258,48 +245,6 @@ function renderOutput() {
 
 }
 
-// for(var i = 0, checkbox; (checkbox = document.querySelectorAll('input[type=checkbox]')[i]) !== undefined; i++) {
-//     checkbox.addEventListener("click", renderOutput, false);
-// }
-
-
-function calculateOverallCoefficient() {
-    // Define the weight for each skill level (example values, you can adjust as needed).
-    const levelWeights = {
-        1: 0.5,
-        2: 1.0,
-        3: 1.5,
-        4: 2.0,
-        5: 2.5,
-        6: 3.0,
-        7: 3.5,
-    };
-
-    // Calculate the overall coefficient based on the selected skills and skill levels.
-    var checked_boxes = document.querySelectorAll('input[type=checkbox]:checked');
-    var overallCoefficient = 0;
-
-    for (var i = 0; i < checked_boxes.length; i++) {
-        var json_data = JSON.parse(checked_boxes[i].getAttribute('sfia-data'));
-        var selectedLevel = json_data.level;
-
-        // Check if the selected skill level has a weight defined in the levelWeights object.
-        if (levelWeights.hasOwnProperty(selectedLevel)) {
-            // Calculate the weighted value for the selected skill level.
-            var skillWeight = levelWeights[selectedLevel];
-            overallCoefficient += skillWeight;
-        }
-    }
-    // Update the content of the overall grade or coefficient div.
-    var overallGradeDiv = document.getElementById('overall-grade-or-coefficient');
-    overallGradeDiv.textContent = overallCoefficient.toFixed(2); // Display the coefficient with two decimal places.
-}
-
-
-// Add an event listener to the checkbox inputs to trigger the overall grade or coefficient calculation when checkboxes are clicked.
-for (var i = 0, checkbox; (checkbox = document.querySelectorAll('input[type=checkbox]')[i]) !== undefined; i++) {
-    checkbox.addEventListener("click", function () {
-        renderOutput();
-        calculateOverallCoefficient(); // Call the function to update the overall grade or coefficient.
-    }, false);
+for(var i = 0, checkbox; (checkbox = document.querySelectorAll('input[type=checkbox]')[i]) !== undefined; i++) {
+    checkbox.addEventListener("click", renderOutput, false);
 }
