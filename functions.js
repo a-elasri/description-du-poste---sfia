@@ -83,6 +83,7 @@ function addSelectionBox(index) {
     return col;
 }
 
+
 $(document).ready(function () {
 
     var specialElementHandlers = {
@@ -95,8 +96,8 @@ $(document).ready(function () {
 
         var doc = new jsPDF();
         var logoImg = new Image();
-        var nomDuPoste = $("#poste").val(); 
-        var descriptionsSupplementaires = $("#description_supplementaire").val(); 
+        var nomDuPoste = $("#poste").val(); // Récupérer la valeur saisie dans le champ de saisie
+        var descriptionsSupplementaires = $("#description_supplementaire").val(); // Récupérer les descriptions supplémentaires saisies
 
         doc.setFont("Josefin Sans", "bold");
         doc.setFontSize(24);
@@ -108,13 +109,17 @@ $(document).ready(function () {
         logoImg.onload = function () {
             doc.addImage(logoImg, "PNG", 15, 5, 30, 30);
 
-            // doc.text("Descriptions supplémentaires :", 15, 60);
-            doc.fromHTML(descriptionsSupplementaires, 15, 50, {
-                "width": 170,
-                "elementHandlers": specialElementHandlers
-            });
+            doc.setFont("arial", "sans serif");
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            // Découper le texte des descriptions_supplementaires en plusieurs lignes
+            var splitDescriptions = doc.splitTextToSize(descriptionsSupplementaires, 170);
+            doc.text(splitDescriptions, 15, 60);
 
-            doc.fromHTML($("#sfia-output").html(), 15, 70, {
+            // Définir la hauteur après l'affichage des descriptions_supplementaires
+            var descriptionPosY = 60 + (splitDescriptions.length * 4.5);
+
+            doc.fromHTML($("#sfia-output").html(), 15, descriptionPosY, {
                 "width": 170,
                 "elementHandlers": specialElementHandlers
             });
@@ -125,6 +130,8 @@ $(document).ready(function () {
         logoImg.src = "logo_banque.png";
     });
 });
+
+
 
 function exportCSV() {
 
